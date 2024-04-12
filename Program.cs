@@ -3,13 +3,14 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types;
+using Microsoft.VisualBasic;
 
 
 internal class Program
 {
     static async Task Main(string[] args)
     {
-        var botClient = new TelegramBotClient("6932018755:AAGdjlI43JCETcm_HBnLkK_OMgyXXNzs5tM");
+        var botClient = new TelegramBotClient("7174108429:AAHM9YbLLLxFKVqQAYDNzmOmIOvWCiNq5cU");
 
         var me = await botClient.GetMeAsync();
         Console.WriteLine($"Hello, World! I am user {me.Id} and my name is {me.FirstName}.");
@@ -33,20 +34,25 @@ internal class Program
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            InlineKeyboardMarkup inlineKeyboard = new(new[]
- {
-    InlineKeyboardButton.WithUrl(
-        text: "Link to the Repository",
-        url: "https://github.com/TelegramBots/Telegram.Bot")
-});
+            var message = update.Message;
+            var input = message.Text;
+            if (!int.TryParse(input, out int i) || i < 1 || i > 1000)
+            {
+                await botClient.SendTextMessageAsync
+                (chatId: message.Chat.Id, text: "Выберите число от 1 до 1000.");
+                return;
+            }
+            var url = $"https://cataas.com/cat/says/{i}";
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(url);
 
-            Message sentMessage = await botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: "A message with an inline keyboard markup",
-                replyMarkup: inlineKeyboard,
-                cancellationToken: cancellationToken);
+            if (!response.IsSuccessStatusCode)
+                return;
+            Message sentMessage = await botClient.SendPhotoAsync
+            (chatId: message.Chat.Id,
+            photo: InputFile.FromUri(url),
+            cancellationToken: cancellationToken);
         }
-    
 
         Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
