@@ -51,7 +51,7 @@ internal class Program
             Message sentMessage = await botClient.SendPhotoAsync
             (chatId: message.Chat.Id,
             photo: InputFile.FromUri(url),
-            caption: "Изображение собаки!",
+            caption: "Изображение собаки согласно введенному числу!",
             cancellationToken: cancellationToken);
         }
 
