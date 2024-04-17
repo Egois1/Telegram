@@ -36,13 +36,13 @@ internal class Program
         {
             var message = update.Message;
             var input = message.Text;
-            if (!int.TryParse(input, out int i) || i < 1 || i > 1000)
+            if (!int.TryParse(input, out int i) || i < 100 || i > 999)
             {
                 await botClient.SendTextMessageAsync
-                (chatId: message.Chat.Id, text: "Выберите число от 1 до 1000.");
+                (chatId: message.Chat.Id, text: "Выберите число от 100 до 999.");
                 return;
             }
-            var url = $"https://cataas.com/cat/says/Изображение №{i}";
+            var url = $"https://http.dog/{i}.webp";
             using var httpClient = new HttpClient();
             var response = await httpClient.GetAsync(url);
 
